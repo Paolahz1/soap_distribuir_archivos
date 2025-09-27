@@ -1,7 +1,26 @@
+package org.example.domain.model;
+
 public class Node {
     private String id;
-    private String address;
+    private String ip;
+    private int port;
     private boolean isAvailable;
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
 
     public String getId() {
         return id;
@@ -9,14 +28,6 @@ public class Node {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public boolean isAvailable() {

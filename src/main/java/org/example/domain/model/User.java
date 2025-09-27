@@ -1,20 +1,44 @@
-public class User {
-    private String id;
-    private String usermail;
+package org.example.domain.model;
 
-    public String getId() {
+public class User {
+    private long id;
+    private String email;
+    private String passwordHash;
+
+
+    public User(long id, String email, String passwordHash) {
+        this.id = id;
+        this.email = email;
+        this.passwordHash = passwordHash;
+    }
+
+    // Getter para id
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    // Setter para id
+    public void setId(long id) {
         this.id = id;
     }
 
-    public String getUsermail() {
-        return usermail;
+    // Getter para email
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsermail(String usermail) {
-        this.usermail = usermail;
+    // Setter para email
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    // Getter para passwordHash (si lo necesitas en algún momento)
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    // Setter para passwordHash
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 }

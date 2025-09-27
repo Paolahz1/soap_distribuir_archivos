@@ -1,3 +1,5 @@
+package org.example.domain.model;
+
 public  class File{
     private String id;
     private String name;

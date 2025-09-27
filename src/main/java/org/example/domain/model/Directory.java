@@ -1,3 +1,5 @@
+package org.example.domain.model;
+
 public class Directory {
 
     private String id;
