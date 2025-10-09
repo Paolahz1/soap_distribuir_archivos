@@ -7,11 +7,10 @@ import java.util.List;
 public interface NodeFileService extends Remote {
 
     // Crear directorios o subdirectorios
-    boolean createDirectory(String path) throws RemoteException;
+    boolean createDirectory(String ownerId, String path) throws RemoteException;
 
     // Subir/almacenar archivos
-    boolean uploadFile(String filePath, byte[] fileContent) throws RemoteException;
-    boolean uploadFiles(List<String> filePaths, List<byte[]> filesContent) throws RemoteException;
+    boolean uploadFile(String fileId, byte[] content) throws RemoteException;
 
     // Leer/descargar archivos
     byte[] downloadFile(String filePath) throws RemoteException;

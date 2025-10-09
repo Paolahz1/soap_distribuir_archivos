@@ -1,17 +1,13 @@
 package org.example.domain.model;
 
 public class Node {
-    private String id;
+    private Long  nodeId;
     private String ip;
-    private int port;
     private boolean isAvailable;
 
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
+    public Node(String ip, Long  id) {
+        this.ip = ip;
+        this.nodeId = id;
     }
 
     public String getIp() {
@@ -22,12 +18,12 @@ public class Node {
         this.ip = ip;
     }
 
-    public String getId() {
-        return id;
+    public Long  getNodeId() {
+        return nodeId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setNodeId(Long  nodeId) {
+        this.nodeId = nodeId;
     }
 
     public boolean isAvailable() {

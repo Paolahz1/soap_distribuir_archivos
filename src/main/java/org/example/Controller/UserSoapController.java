@@ -16,12 +16,12 @@ public class UserSoapController {
     }
 
     @WebMethod
-    public AuthResponse register(String email, String password) {
+    public Long register(String email, String password) {
         return authService.register(email, password);
     }
 
     @WebMethod
-    public AuthResponse login(String email, String password) {
+    public Long login(String email, String password) {
         return authService.login(email, password);
     }
 }

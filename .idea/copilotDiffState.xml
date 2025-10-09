@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/src/main/java/com/example/auth/JwtAuthFilter.java">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/src/main/java/com/example/auth/JwtAuthFilter.java" />
+              <option name="updatedContent" value="package com.example.auth;&#10;&#10;import jakarta.servlet.FilterChain;&#10;import jakarta.servlet.ServletException;&#10;import jakarta.servlet.http.HttpServletRequest;&#10;import jakarta.servlet.http.HttpServletResponse;&#10;import org.springframework.beans.factory.annotation.Autowired;&#10;import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;&#10;import org.springframework.security.core.context.SecurityContextHolder;&#10;import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;&#10;import org.springframework.stereotype.Component;&#10;import org.springframework.web.filter.OncePerRequestFilter;&#10;&#10;import java.io.IOException;&#10;&#10;@Component&#10;public class JwtAuthFilter extends OncePerRequestFilter {&#10;&#10;    @Autowired&#10;    private JwtUtil jwtUtil;&#10;&#10;    @Override&#10;    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)&#10;            throws ServletException, IOException {&#10;        &#10;        String authHeader = request.getHeader(&quot;Authorization&quot;);&#10;        String token = null;&#10;        String username = null;&#10;&#10;        if (authHeader != null &amp;&amp; authHeader.startsWith(&quot;Bearer &quot;)) {&#10;            token = authHeader.substring(7);&#10;            username = jwtUtil.extractUsername(token);&#10;        }&#10;&#10;        if (username != null &amp;&amp; SecurityContextHolder.getContext().getAuthentication() == null) {&#10;            if (jwtUtil.validateToken(token, username)) {&#10;                UsernamePasswordAuthenticationToken authToken = &#10;                    new UsernamePasswordAuthenticationToken(username, null, null);&#10;                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));&#10;                SecurityContextHolder.getContext().setAuthentication(authToken);&#10;            }&#10;        }&#10;&#10;        filterChain.doFilter(request, response);&#10;    }&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

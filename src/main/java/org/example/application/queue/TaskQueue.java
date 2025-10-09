@@ -3,13 +3,11 @@ package org.example.application.queue;
 import org.example.domain.port.StorageCommand;
 
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 public class TaskQueue {
 
-    private final Queue<StorageCommand> queue = new ConcurrentLinkedQueue<>();
+    private final Queue<StorageCommand<?>> queue = new ConcurrentLinkedQueue<>();
     private final ExecutorService executor = Executors.newFixedThreadPool(5);
 
     public TaskQueue() {
@@ -17,35 +15,50 @@ public class TaskQueue {
     }
 
     /*
-        * Inicia un hilo en segundo plano que procesa los comandos encolados.
+     * Inicia un hilo en segundo plano que procesa los comandos encolados.
      */
     private void startBackgroundProcessor() {
         Runnable processor = () -> {
             while (true) {
-                StorageCommand command = queue.poll();
+                StorageCommand<?> command = queue.poll();
                 if (command != null) {
                     executor.submit(() -> {
                         try {
                             System.out.println("Ejecutando comando: " + command.getClass().getSimpleName());
-                            command.execute();
+                            return command.execute();
                         } catch (Exception e) {
                             System.err.println("Error ejecutando comando: " + e.getMessage());
+                            throw e;
                         }
                     });
                 }
                 try {
-                    Thread.sleep(50); // Evita uso excesivo de CPU
+                    Thread.sleep(50); // 👈 evita busy-wait y mantiene vivo el hilo
                 } catch (InterruptedException ignored) {}
             }
         };
 
         Thread thread = new Thread(processor, "TaskQueue-Processor");
-        thread.setDaemon(false); // Cambiado a false para que el hilo no sea daemon y mantenga la aplicación viva
+        thread.setDaemon(false); // mantiene la app viva
         thread.start();
     }
 
-    public void enqueue(StorageCommand command) {
-        queue.add(command);
+    /**
+     * Encola un comando y devuelve un Future con el resultado.
+     */
+    public <T> Future<T> enqueue(StorageCommand<T> command) {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        queue.add(() -> {
+            try {
+                T result = command.execute();
+                future.complete(result);
+                return result;
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+                throw e;
+            }
+        });
+        return future;
     }
 
     public void shutdown() {

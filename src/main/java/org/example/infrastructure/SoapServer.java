@@ -1,7 +1,6 @@
 package org.example.infrastructure;
 
 import jakarta.xml.ws.Endpoint;
-import org.example.Controller.UnifiedSoapController;
 
 public class SoapServer {
 

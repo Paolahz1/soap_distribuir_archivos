@@ -1,14 +1,16 @@
 package org.example.Controller;
 
+
 import jakarta.jws.WebMethod;
+import jakarta.jws.WebParam;
 import jakarta.jws.WebService;
-import org.example.application.queue.TaskQueue;
+import org.example.application.Dto.FileDTO;
+import org.example.application.Dto.OperationResponse;
 import org.example.application.service.FileService;
-import org.example.application.service.NodeSelector;
-import org.example.infrastructure.repository.FileRepository;
 
 @WebService(serviceName = "FileService")
 public class FileSoapController {
+
 
     private final FileService fileService;
 
@@ -17,14 +19,175 @@ public class FileSoapController {
     }
 
     @WebMethod
-    public String uploadFile(String path, byte[] content, String ownerId)
-    {
-        System.out.println("fue delegado a  a FileSoapController");
+    public OperationResponse createDirectory( Long userId, String path ) {
         try {
-            fileService.uploadFile(path, content, ownerId);
-            return "Upload encolado correctamente";
+
+            System.out.println("createDirectory called with path: " + path + " and userId: " + userId);
+            if (userId == null) {
+                System.out.println("createDirectory: Usuario no autenticado");
+                return OperationResponse.error("Usuario no autenticado", "UNAUTHORIZED");
+            }
+
+            // Delegar al servicio
+            return fileService.createDirectory(path, userId);
+
         } catch (Exception e) {
-            return "Error al encolar upload: " + e.getMessage();
+            e.printStackTrace();
+            return OperationResponse.error("Error al crear directorio: " + e.getMessage(), "INTERNAL_ERROR");
         }
+    }
+
+    @WebMethod
+    public OperationResponse uploadFile(
+            @WebParam(name = "userId") Long userId,
+            @WebParam(name = "directoryId") Long directoryId,
+            @WebParam(name = "fileName") String fileName,
+            @WebParam(name = "content") byte[] content) {
+        try {
+
+            if (userId == null) {
+                return OperationResponse.error("Usuario no autenticado", "UNAUTHORIZED");
+            }
+
+            // Delegar al servicio
+            return fileService.uploadFile(directoryId, fileName, content, userId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return OperationResponse.error("Error al subir archivo: " + e.getMessage(), "INTERNAL_ERROR");
+        }
+    }
+
+    @WebMethod
+    public OperationResponse uploadFiles(
+            @WebParam(name = "userId") Long userId,
+            @WebParam(name = "directoryId") Long directoryId,
+            @WebParam(name = "files") FileDTO[] files) {
+        try {
+
+            System.out.println("uploadFiles called with directoryId: " + directoryId + " and userId: " + userId);
+            if (userId == null) {
+                return OperationResponse.error("Usuario no autenticado", "UNAUTHORIZED");
+            }
+
+            // Validaciones
+            if (directoryId == null) {
+                return OperationResponse.error("El directoryId no puede ser null", "INVALID_DIRECTORY");
+            }
+
+            if (files == null || files.length == 0) {
+                return OperationResponse.error("No se recibieron archivos", "NO_FILES");
+            }
+
+            // Procesar cada archivo
+            int successCount = 0;
+            int failCount = 0;
+            StringBuilder errors = new StringBuilder();
+
+            for (FileDTO file : files) {
+                OperationResponse result = fileService.uploadFile(
+                        directoryId,
+                        file.getFileName(),
+                        file.getContent(),
+                        userId
+                );
+
+                if (result.isSuccess()) {
+                    successCount++;
+                } else {
+                    failCount++;
+                    errors.append(file.getFileName()).append(": ").append(result.getMessage()).append("; ");
+                }
+            }
+
+            // Construir respuesta final
+            if (failCount == 0) {
+                return OperationResponse.success(
+                        "Todos los archivos subidos exitosamente (" + successCount + " archivos)"
+                );
+            } else if (successCount == 0) {
+                return OperationResponse.error(
+                        "Ningún archivo pudo ser subido. Errores: " + errors.toString(),
+                        "ALL_FAILED"
+                );
+            } else {
+                return OperationResponse.success(
+                        successCount + " archivos subidos, " + failCount + " fallaron. Errores: " + errors.toString()
+                );
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return OperationResponse.error("Error al subir archivos: " + e.getMessage(), "INTERNAL_ERROR");
+        }
+    }
+
+    @WebMethod
+    public FileDTO downloadFile( Long userId,  String fileUuid) {
+        try {
+
+            if (userId == null) {
+                System.err.println("downloadFile: Usuario no autenticado");
+                return createErrorFileDTO("Usuario no autenticado");
+            }
+
+            // Validar parámetros
+            if (fileUuid == null || fileUuid.trim().isEmpty()) {
+                System.err.println("downloadFile: fileUuid vacío");
+                return createErrorFileDTO("fileUuid no puede estar vacío");
+            }
+
+            // Delegar al servicio
+            FileDTO result = fileService.downloadFile(fileUuid, userId);
+
+            if (result == null) {
+                return createErrorFileDTO("No se pudo descargar el archivo");
+            }
+
+            return result;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return createErrorFileDTO("Error al descargar archivo: " + e.getMessage());
+        }
+    }
+
+    @WebMethod
+    public FileDTO[] downloadFiles( Long userId,  String[] fileUuids) {
+        try {
+            if (userId == null) {
+                System.err.println("downloadFiles: Usuario no autenticado");
+                return new FileDTO[]{createErrorFileDTO("Usuario no autenticado")};
+            }
+
+            // Validar parámetros
+            if (fileUuids == null || fileUuids.length == 0) {
+                System.err.println("downloadFiles: Lista de UUIDs vacía");
+                return new FileDTO[]{createErrorFileDTO("Lista de UUIDs vacía")};
+            }
+
+            // Delegar al servicio
+            FileDTO[] results = fileService.downloadFiles(fileUuids, userId);
+
+            if (results == null || results.length == 0) {
+                return new FileDTO[]{createErrorFileDTO("No se pudieron descargar los archivos")};
+            }
+
+            return results;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new FileDTO[]{createErrorFileDTO("Error al descargar archivos: " + e.getMessage())};
+        }
+    }
+
+    /**
+     * Método auxiliar para crear un FileDTO de error
+     */
+    private FileDTO createErrorFileDTO(String errorMessage) {
+        FileDTO error = new FileDTO();
+        error.setFileName("ERROR");
+        error.setContent(null);
+        return error;
     }
 }
