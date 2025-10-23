@@ -1,7 +1,6 @@
 package org.example.domain.command;
 
 import org.example.domain.port.StorageCommand;
-import org.example.infrastructure.remote.NodeFileService;
 import org.example.infrastructure.repository.FileRepository;
 
 public class CreateDirectoryCommand implements StorageCommand {
@@ -21,7 +20,7 @@ public class CreateDirectoryCommand implements StorageCommand {
     public Boolean execute() {
         System.out.println("Llega al execute del CreateDirectoryCommand");
         try {
-            fileRepository.createDirectoryHierarchy(path, ownerId);
+
             System.out.println("Directorio registrado en DB: " + path);
             return true;
         } catch (Exception e) {

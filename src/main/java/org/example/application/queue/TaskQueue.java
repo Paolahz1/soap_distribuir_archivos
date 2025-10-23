@@ -33,7 +33,7 @@ public class TaskQueue {
                     });
                 }
                 try {
-                    Thread.sleep(50); // 👈 evita busy-wait y mantiene vivo el hilo
+                    Thread.sleep(50); // evita busy-wait y mantiene vivo el hilo
                 } catch (InterruptedException ignored) {}
             }
         };

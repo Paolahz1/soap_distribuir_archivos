@@ -22,7 +22,7 @@ public interface NodeFileService extends Remote {
     boolean moveDirectory(String sourcePath, String destinationPath) throws RemoteException;
 
     // Eliminar archivos o directorios
-    boolean deleteFile(String filePath) throws RemoteException;
+    boolean deleteFile(String fileId) throws RemoteException;
     boolean deleteFiles(List<String> filePaths) throws RemoteException;
     boolean deleteDirectory(String directoryPath) throws RemoteException;
 

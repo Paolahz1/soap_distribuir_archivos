@@ -179,7 +179,210 @@ public class FileSoapController {
             e.printStackTrace();
             return new FileDTO[]{createErrorFileDTO("Error al descargar archivos: " + e.getMessage())};
         }
+
     }
+
+
+    /**
+     * Mueve un archivo de un directorio a otro.
+     */
+
+    @WebMethod
+    public OperationResponse moveFileByPath(String sourcePath, String fileName, String destinationPath, Long userId) {
+        try {
+            // Validaciones
+            if (sourcePath == null || sourcePath.trim().isEmpty()) {
+                return OperationResponse.error("El path origen no puede estar vacío", "INVALID_SOURCE_PATH");
+            }
+            if (fileName == null || fileName.trim().isEmpty()) {
+                return OperationResponse.error("El nombre del archivo no puede estar vacío", "INVALID_FILENAME");
+            }
+            if (destinationPath == null || destinationPath.trim().isEmpty()) {
+                return OperationResponse.error("El path destino no puede estar vacío", "INVALID_DESTINATION_PATH");
+            }
+            if (userId == null) {
+                return OperationResponse.error("El userId no puede ser null", "INVALID_USER");
+            }
+
+            return fileService.moveFileByPath(sourcePath, fileName, destinationPath, userId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return OperationResponse.error("Error al mover archivos: " + e.getMessage(), "INTERNAL_ERROR");
+
+        }
+    }
+
+
+    @WebMethod
+    public OperationResponse moveDirectoryByPath(String sourcePath, String destinationPath, Long userId) {
+        try {
+            // Validaciones
+            if (sourcePath == null || sourcePath.trim().isEmpty()) {
+                return OperationResponse.error("El path origen no puede estar vacío", "INVALID_SOURCE_PATH");
+            }
+            if (destinationPath == null || destinationPath.trim().isEmpty()) {
+                return OperationResponse.error("El path destino no puede estar vacío", "INVALID_DESTINATION_PATH");
+            }
+            if (userId == null) {
+                return OperationResponse.error("El userId no puede ser null", "INVALID_USER");
+            }
+
+            return fileService.moveDirectoryByPath( sourcePath,  destinationPath,  userId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return OperationResponse.error("Error al mover directorio: " + e.getMessage(), "INTERNAL_ERROR");
+
+        }
+    }
+
+    @WebMethod
+    public OperationResponse renameFileByPath(String directoryPath, String oldFileName, String newFileName, Long userId) {
+        try {
+            // Validaciones
+            if (directoryPath == null || directoryPath.trim().isEmpty()) {
+                return OperationResponse.error("El path  no puede estar vacío", "INVALID_SOURCE_PATH");
+            }
+            if (oldFileName == null || oldFileName.trim().isEmpty()) {
+                return OperationResponse.error("El nombre del archivo no puede estar vacío", "INVALID_FILENAME");
+            }
+            if (newFileName == null || newFileName.trim().isEmpty()) {
+                return OperationResponse.error("El nombre del archivo newFileName no puede estar vacío", "INVALID_FILENAME");
+            }
+            if (userId == null) {
+                return OperationResponse.error("El userId no puede ser null", "INVALID_USER");
+            }
+
+            return fileService.renameFileByPath( directoryPath,  oldFileName,  newFileName,  userId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return OperationResponse.error("Error al rename archivos: " + e.getMessage(), "INTERNAL_ERROR");
+
+        }
+    }
+
+    @WebMethod
+    public OperationResponse  renameDirectoryByPath(String directoryPath, String newName, Long userId)
+    {
+        try {
+            // Validaciones
+            if (directoryPath == null || directoryPath.trim().isEmpty()) {
+                return OperationResponse.error("El path  no puede estar vacío", "INVALID_SOURCE_PATH");
+            }
+
+            if (newName == null || newName.trim().isEmpty()) {
+                return OperationResponse.error("El nombre del archivo newName no puede estar vacío", "INVALID_FILENAME");
+            }
+            if (userId == null) {
+                return OperationResponse.error("El userId no puede ser null", "INVALID_USER");
+            }
+
+            return fileService.renameDirectoryByPath( directoryPath,  newName,  userId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return OperationResponse.error("Error al rename directorio: " + e.getMessage(), "INTERNAL_ERROR");
+
+        }
+    }
+
+
+    // TODO
+    @WebMethod
+    public OperationResponse deleteFileByPath(String directoryPath, String fileName, Long userId) {
+        try {
+            // Validaciones
+            if (directoryPath == null || directoryPath.trim().isEmpty()) {
+                return OperationResponse.error("El path no puede estar vacío", "INVALID_PATH");
+            }
+            if (fileName == null || fileName.trim().isEmpty()) {
+                return OperationResponse.error("El nombre del archivo no puede estar vacío", "INVALID_FILENAME");
+            }
+            if (userId == null) {
+                return OperationResponse.error("El userId no puede ser null", "INVALID_USER");
+            }
+
+            return fileService.deleteFileByPath(directoryPath, fileName, userId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return OperationResponse.error("Error al delete archivo: " + e.getMessage(), "INTERNAL_ERROR");
+
+        }
+    }
+
+    // TODO
+    @WebMethod
+    public OperationResponse deleteDirectoryById(Long directoryId, Long userId) {
+        try {
+            // Validaciones
+            if (directoryId == null) {
+                return OperationResponse.error("El directoryId no puede ser null", "INVALID_DIRECTORY");
+            }
+            if (userId == null) {
+                return OperationResponse.error("El userId no puede ser null", "INVALID_USER");
+            }
+
+            return fileService.deleteDirectoryById(directoryId, userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return OperationResponse.error("Error al delete directory: " + e.getMessage(), "INTERNAL_ERROR");
+
+        }
+    }
+
+
+    @WebMethod
+    public OperationResponse shareFileWithUser(String directoryPath, String fileName, Long ownerId, String shareWithEmail) {
+        try {
+            // Validaciones
+            if (directoryPath == null || directoryPath.trim().isEmpty()) {
+                return OperationResponse.error("El path no puede estar vacío", "INVALID_PATH");
+            }
+            if (fileName == null || fileName.trim().isEmpty()) {
+                return OperationResponse.error("El nombre del archivo no puede estar vacío", "INVALID_FILENAME");
+            }
+            if (ownerId == null) {
+                return OperationResponse.error("El ownerId no puede ser null", "INVALID_OWNER");
+            }
+            if (shareWithEmail == null || shareWithEmail.trim().isEmpty()) {
+                return OperationResponse.error("El email no puede estar vacío", "INVALID_EMAIL");
+            }
+
+            return fileService.shareFileWithUser( directoryPath,  fileName,  ownerId,  shareWithEmail);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return OperationResponse.error("Error al share file: " + e.getMessage(), "INTERNAL_ERROR");
+
+        }
+    }
+
+    @WebMethod
+
+    public OperationResponse shareDirectoryWithUser(String directoryPath, Long ownerId, String shareWithEmail) {
+        try {
+            // Validaciones
+            if (directoryPath == null || directoryPath.trim().isEmpty()) {
+                return OperationResponse.error("El path no puede estar vacío", "INVALID_PATH");
+            }
+            if (ownerId == null) {
+                return OperationResponse.error("El ownerId no puede ser null", "INVALID_OWNER");
+            }
+            if (shareWithEmail == null || shareWithEmail.trim().isEmpty()) {
+                return OperationResponse.error("El email no puede estar vacío", "INVALID_EMAIL");
+            }
+
+            return fileService.shareDirectoryWithUser( directoryPath,  ownerId,  shareWithEmail);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return OperationResponse.error("Error al share file: " + e.getMessage(), "INTERNAL_ERROR");
+
+        }
+    }
+
 
     /**
      * Método auxiliar para crear un FileDTO de error

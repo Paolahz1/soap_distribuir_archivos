@@ -37,7 +37,6 @@ public class NodeService {
      * Devuelve todos los nodos donde está replicado un archivo.
      */
     public List<Long> getNodeIdsByFile(String fileUuid) throws SQLException {
-        System.out.println("LLEGA A NodeService.getNodeIdsByFile");
         return fileRepository.getNodesByFile(fileUuid);
     }
 

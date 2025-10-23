@@ -22,9 +22,23 @@ public class PermissionService {
         return fileRepository.isDirectorySharedWith(userId, directoryId);
     }
 
+
+    public boolean isOwnerDirectory(Long userId, Long directoryId) throws SQLException {
+        // 1. Verificar si userId es owner de la carpeta
+        if (fileRepository.isDirectoryOwner(userId, directoryId)) {
+            return true;
+        }
+        return  false;
+    }
+
     public Long resolveOwnerOfDirectory(Long directoryId) throws SQLException {
         return fileRepository.getDirectoryOwner(directoryId);
     }
+
+    public  boolean isOwnerFile(Long userId, String fileUuid) throws SQLException {
+        return fileRepository.isFileOwner(userId, fileUuid);
+    }
+
 
     public boolean canReadFile(Long userId, String fileUuid) throws SQLException {
         // 1. Verificar si el usuario es dueño del archivo
